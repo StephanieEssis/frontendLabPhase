@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @layer base {
+
+  :root {
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --background: #f8f9fa;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+  }
+
+  .dark {
+    --primary: #007bff;
+    --secondary: #6c757d;
+    --background: #212529;
+  }
+} */
+
+/* Polices personnalisées */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Variables de couleurs */
+:root {
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+  --secondary-gradient: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+}
+
+/* Styles de base */
+body {
+  font-family: 'Poppins', sans-serif;
+  @apply bg-gradient-to-br from-pink-50 to-purple-50;
+}
+
+/* Animation de gradient */
+@keyframes gradient-x {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-x {
+  background-size: 200% 200%;
+  animation: gradient-x 15s ease infinite;
+}
+
+/* Animations de transition */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Styles des boutons */
+.btn {
+  @apply inline-flex items-center justify-center px-6 py-3 rounded-full font-semibold transition-all duration-300 transform;
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 hover:scale-105 shadow-lg hover:shadow-xl;
+}
+
+/* Styles des cartes */
+.card {
+  @apply bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden;
+}
+
+/* Effets de survol */
+.hover-lift {
+  @apply transform transition-transform duration-300 hover:-translate-y-2;
+}
+
+/* Animations d'entrée */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Styles d'accessibilité */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus styles pour l'accessibilité */
+*:focus-visible {
+  @apply outline-none ring-2 ring-purple-500 ring-offset-2;
+}
+
+/* Styles de texte animés */
+.animated-text {
+  background: var(--primary-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: textShine 5s ease infinite;
+}
+
+@keyframes textShine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Styles pour le mode sombre */
+@media (prefers-color-scheme: dark) {
+  body {
+    @apply bg-gradient-to-br from-gray-900 to-purple-900;
+    color: white;
+  }
+  
+  .card {
+    @apply bg-gray-800 text-white;
+  }
+}
