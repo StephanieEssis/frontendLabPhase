@@ -8,13 +8,15 @@ import Register from './pages/Register';
 import RoomDetail from './pages/RoomDetail';
 import Rooms from './pages/Rooms';
 import Reservation from './pages/Reservation';
-import Confirmation from './components/Confirmation';
+import Confirmation from './pages/Confirmation';
+import Dashboard from './components/Dashboard';
+import PrivateRoute from './components/PrivateRoute';
 
 const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
-      <main className="flex-1">
+      <main className="flex-1 pt-16">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -23,6 +25,14 @@ const App = () => {
           <Route path="/rooms/:id" element={<RoomDetail />} />
           <Route path="/reservation" element={<Reservation />} />
           <Route path="/confirmation" element={<Confirmation />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            } 
+          />
         </Routes>
       </main>
       <Footer />
