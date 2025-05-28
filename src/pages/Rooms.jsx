@@ -37,7 +37,7 @@ const Rooms = () => {
           id: 3,
           name: 'Chambre Éco Chic',
           description: 'Le parfait équilibre entre confort et budget.',
-          price: 40000,
+          price: 50000,
           image: '/images/stand2.png',
           rating: 4.4,
           reviews: 156,

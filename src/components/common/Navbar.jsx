@@ -27,6 +27,15 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const handleRestClick = (e) => {
+    // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
+    if (!user) {
+      e.preventDefault();
+      navigate('/login', { state: { from: location.pathname } });
+    }
+    // Si c'est un admin ou un utilisateur connecté, permettre l'accès direct
+  };
+
   return (
     <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,6 +63,7 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/reservation"
+                onClick={handleRestClick}
                 className={`text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 ${
                   location.pathname === '/reservation' ? 'border-purple-500' : 'border-transparent hover:border-purple-300'
                 }`}
@@ -171,6 +181,7 @@ const Navbar = () => {
           </Link>
           <Link
             to="/reservation"
+            onClick={handleRestClick}
             className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
               location.pathname === '/reservation'
                 ? 'bg-purple-50 border-purple-500 text-purple-700'

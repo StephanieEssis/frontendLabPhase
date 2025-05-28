@@ -1,29 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [error, setError] = useState('');
-
-  // Données de test pour la démo
-  const testUsers = [
-    {
-      email: 'admin@test.com',
-      password: 'admin123',
-      role: 'admin',
-      id: 1
-    },
-    {
-      email: 'user@test.com',
-      password: 'user123',
-      role: 'user',
-      id: 2
-    }
-  ];
 
   const handleChange = (e) => {
     setFormData({
@@ -32,129 +17,112 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Vérification avec les données de test
-    const user = testUsers.find(
-      u => u.email === formData.email && u.password === formData.password
-    );
+    try {
+      if (formData.email && formData.password) {
+        // Simulation de connexion pour le développement frontend
+        let userRole = 'user';
+        // Si l'email contient "admin", on considère que c'est un admin
+        if (formData.email.includes('admin')) {
+          userRole = 'admin';
+        }
 
-    if (user) {
-      // Simuler la réponse du backend
-      const mockResponse = {
-        user: {
-          id: user.id,
-          email: user.email,
-          role: user.role
-        },
-        token: 'fake-jwt-token'
-      };
+        // Simuler un délai pour rendre l'expérience plus réaliste
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-      // Sauvegarder les informations de l'utilisateur
-      localStorage.setItem('user', JSON.stringify(mockResponse.user));
-      localStorage.setItem('token', mockResponse.token);
+        // Créer un utilisateur simulé
+        const mockUser = {
+          id: Date.now(),
+          email: formData.email,
+          role: userRole,
+        };
 
-      // Redirection
-      if (user.role === 'admin') {
-        navigate('/dashboard');
+        // Générer un faux token
+        const mockToken = 'mock-token-' + Date.now();
+
+        // Sauvegarder dans le localStorage
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+
+        // Redirection basée sur le rôle
+        if (userRole === 'admin') {
+          navigate('/dashboard');
+        } else {
+          // Si l'utilisateur vient d'une page spécifique, y retourner
+          const from = location.state?.from || '/';
+          navigate(from);
+        }
       } else {
-        navigate('/rooms');
+        setError('Veuillez remplir tous les champs');
       }
-    } else {
-      setError('Email ou mot de passe incorrect');
+    } catch (error) {
+      console.error('Erreur de connexion:', error);
+      setError('Une erreur est survenue lors de la connexion');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Bienvenue sur MyLanLodge
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Connexion
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Connectez-vous pour gérer vos réservations
-          </p>
-          {/* Message pour les données de test */}
-          <div className="mt-4 p-4 bg-blue-50 rounded-md">
-            <p className="text-sm text-blue-800 font-medium">Comptes de test :</p>
-            <ul className="mt-2 text-sm text-blue-700 list-disc list-inside">
-              <li>Admin : admin@test.com / admin123</li>
-              <li>Client : user@test.com / user123</li>
-            </ul>
-          </div>
-        </div>
-
-        <button
-          onClick={() => navigate('/rooms')}
-          className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-        >
-          Voir les chambres disponibles
-        </button>
-
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-gray-50 text-gray-500">Ou connectez-vous</span>
-          </div>
-        </div>
-
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="text-sm text-red-700">{error}</div>
-            </div>
+          {location.state?.from && (
+            <p className="mt-2 text-gray-600">
+              Connectez-vous pour continuer votre réservation
+            </p>
           )}
-          <div className="rounded-md shadow-sm -space-y-px">
+        </div>
+
+        <div className="bg-white rounded-2xl shadow-xl p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-red-50 text-red-500 p-4 rounded-xl text-sm">
+                {error}
+              </div>
+            )}
+
             <div>
-              <label htmlFor="email" className="sr-only">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Adresse email"
                 value={formData.email}
                 onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
+
             <div>
-              <label htmlFor="password" className="sr-only">Mot de passe</label>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Mot de passe
+              </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Mot de passe"
                 value={formData.password}
                 onChange={handleChange}
+                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent"
               />
             </div>
-          </div>
 
-          <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-4 rounded-xl hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 font-medium transition-all duration-200"
             >
               Se connecter
             </button>
-          </div>
-        </form>
-
-        <div className="text-center text-sm">
-          <p className="text-gray-600">
-            Pas encore de compte ?{' '}
-            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Créer un compte
-            </Link>
-          </p>
+          </form>
         </div>
       </div>
     </div>

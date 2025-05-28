@@ -23,12 +23,19 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/rooms" element={<Rooms />} />
           <Route path="/rooms/:id" element={<RoomDetail />} />
-          <Route path="/reservation" element={<Reservation />} />
+          <Route 
+            path="/reservation" 
+            element={
+              <PrivateRoute>
+                <Reservation />
+              </PrivateRoute>
+            } 
+          />
           <Route path="/confirmation" element={<Confirmation />} />
           <Route 
             path="/dashboard" 
             element={
-              <PrivateRoute>
+              <PrivateRoute adminOnly={true}>
                 <Dashboard />
               </PrivateRoute>
             } 

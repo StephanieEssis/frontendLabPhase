@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 const RoomDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -21,8 +22,7 @@ const RoomDetail = () => {
           image: '/images/royal1.avif',
           images: [
             '/images/royal1.avif',
-            '/images/royal2.avif',
-            '/images/royal3.avif'
+            '/images/royal2.avif'
           ],
           amenities: [
             'Jacuzzi privé',
@@ -49,8 +49,7 @@ const RoomDetail = () => {
           image: '/images/deluxe.avif',
           images: [
             '/images/deluxe.avif',
-            '/images/deluxe2.avif',
-            '/images/deluxe3.avif'
+            '/images/standeco.avif'
           ],
           amenities: [
             'Lit queen-size',
@@ -101,7 +100,25 @@ const RoomDetail = () => {
   }, [id]);
 
   const handleReservation = () => {
-    // Stocker les informations de la chambre pour la page de réservation
+    // Vérifier si l'utilisateur est connecté
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Si non connecté, rediriger vers la page de connexion avec un state pour revenir après
+      navigate('/login', {
+        state: { 
+          from: location.pathname,
+          selectedRoom: {
+            id: room.id,
+            name: room.name,
+            price: room.price,
+            maxGuests: room.maxGuests
+          }
+        }
+      });
+      return;
+    }
+
+    // Si connecté, procéder à la réservation
     navigate('/reservation', {
       state: { 
         selectedRoom: {
@@ -137,101 +154,98 @@ const RoomDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+          {/* En-tête avec nom et prix */}
+          <div className="p-6 sm:p-8 border-b border-gray-100">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                {room.name}
+              </h1>
+              <div className="flex flex-col items-end">
+                <div className="text-3xl font-bold text-purple-600">
+                  {room.price.toLocaleString('fr-FR')} FCFA
+                </div>
+                <div className="text-sm text-gray-500">par nuit</div>
+              </div>
+            </div>
+            <p className="mt-4 text-lg text-gray-600 max-w-3xl">
+              {room.longDescription}
+            </p>
+          </div>
+
           {/* Galerie d'images */}
-          <div className="relative h-96 grid grid-cols-2 gap-4 p-4">
-            <div className="col-span-1 h-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 sm:p-8">
+            <div className="h-[400px] md:h-[500px] rounded-2xl overflow-hidden">
               <img
                 src={room.images[0]}
                 alt={room.name}
-                className="w-full h-full object-cover rounded-2xl"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
-            <div className="col-span-1 grid grid-rows-2 gap-4">
-              {room.images.slice(1, 3).map((image, index) => (
-                <div key={index} className="relative h-full">
+            <div className="grid grid-rows-2 gap-4 h-[400px] md:h-[500px]">
+              {room.images.slice(1).map((image, index) => (
+                <div key={index} className="rounded-2xl overflow-hidden">
                   <img
                     src={image}
                     alt={`${room.name} - Vue ${index + 2}`}
-                    className="w-full h-full object-cover rounded-2xl"
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Informations de la chambre */}
-          <div className="p-8">
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{room.name}</h1>
-                <p className="text-gray-600">{room.longDescription}</p>
+          {/* Informations détaillées */}
+          <div className="p-6 sm:p-8 space-y-8">
+            {/* Caractéristiques principales */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6">
+              <div className="text-center">
+                <span className="block text-2xl mb-1">👥</span>
+                <span className="text-sm text-gray-600">Capacité</span>
+                <p className="font-semibold">{room.maxGuests} personnes</p>
               </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  {room.price.toLocaleString('fr-FR')} FCFA
-                </div>
-                <div className="text-sm text-gray-500">par nuit</div>
+              <div className="text-center">
+                <span className="block text-2xl mb-1">📏</span>
+                <span className="text-sm text-gray-600">Superficie</span>
+                <p className="font-semibold">{room.size}</p>
+              </div>
+              <div className="text-center">
+                <span className="block text-2xl mb-1">⭐</span>
+                <span className="text-sm text-gray-600">Note</span>
+                <p className="font-semibold">{room.rating}/5</p>
+              </div>
+              <div className="text-center">
+                <span className="block text-2xl mb-1">📝</span>
+                <span className="text-sm text-gray-600">Avis</span>
+                <p className="font-semibold">{room.reviews}</p>
               </div>
             </div>
 
-            {/* Caractéristiques */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              <div>
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
-                  <span className="mr-2">✨</span> Caractéristiques
-                </h2>
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gray-600">Superficie:</span>
-                      <span className="font-medium">{room.size}</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gray-600">Capacité:</span>
-                      <span className="font-medium">Max {room.maxGuests} pers.</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gray-600">Note:</span>
-                      <span className="font-medium flex items-center">
-                        <span className="text-yellow-400 mr-1">★</span>
-                        {room.rating}
-                      </span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gray-600">Avis:</span>
-                      <span className="font-medium">{room.reviews}</span>
-                    </div>
+            {/* Équipements */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6">
+              <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                <span className="mr-2">✨</span> Équipements
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {room.amenities.map((amenity, index) => (
+                  <div key={index} className="flex items-center space-x-2">
+                    <span className="text-purple-600">•</span>
+                    <span className="text-gray-700">{amenity}</span>
                   </div>
-                </div>
-              </div>
-
-              <div>
-                <h2 className="text-xl font-semibold mb-4 flex items-center">
-                  <span className="mr-2">🛋️</span> Équipements
-                </h2>
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4">
-                  <div className="grid grid-cols-2 gap-2">
-                    {room.amenities.map((amenity, index) => (
-                      <div key={index} className="flex items-center space-x-2">
-                        <span className="text-purple-600">•</span>
-                        <span className="text-gray-600">{amenity}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
             {/* Bouton de réservation */}
-            <div className="flex justify-center">
+            <div className="flex justify-center pt-6">
               <button
                 onClick={handleReservation}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-12 py-4 rounded-full font-medium text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-12 py-4 rounded-full font-medium text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center space-x-2"
               >
-                Réserver maintenant ✨
+                <span>Réserver maintenant</span>
+                <span className="text-2xl">✨</span>
               </button>
             </div>
           </div>
